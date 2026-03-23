@@ -22,7 +22,7 @@ def summarise_ratio(col):
     print(f"Skewness (with missing values): {data.skew():.2f}") 
     print(f"Missing Values: {data.isnull().sum()}")
 
-    if col in missing_cols:
+    if data.isnull().sum() > 0:
         print(f"                   Without Missing  -->  With Missing")
         print(f"Mean:              {data_clean.mean():.2f}    -->  {data.mean():.2f}")
         print(f"Median:            {data_clean.median():.2f}    -->  {data.median():.2f}")
