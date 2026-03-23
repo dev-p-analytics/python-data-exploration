@@ -36,6 +36,33 @@ def summarise_ratio(col):
         print(f"75th Percentile:   {data_clean.quantile(0.75    ):.2f}    -->  {data.quantile(0.75):.2f}")
         print(f"Skewness:          {data_clean.skew():.2f}    -->  {data.skew():.2f}")
 
+def summarise_nominal(col):
+    print("-" * 40)
+    print(f"\nSummary for: {col}")
+    print("-" * 40)
+
+    data = df[col]
+    data_clean = data.dropna()  # Remove missing values for summary statistics
+
+    #frequency and relative frequency
+    freq = data.value_counts()
+    rel_freq = data.value_counts(normalize=True) * 100
+
+    print(f"Mode: {data.mode().iloc[0]}")
+    print(f"Missing Values: {data.isnull().sum()}")
+
+    if col in missing_cols:
+        print(f"\n                   Without Missing  -->  With Missing")
+        print(f"\nMode:              {data_clean.mode().iloc[0]}    -->  {data.mode().iloc[0]}")
+        for category in freq.index:
+            print(f"{category}: {data_clean.value_counts()[category]} ({data_clean.value_counts(normalize=True)[category] * 100:.2f}%)    -->  {freq[category]} ({rel_freq[category]:.2f}%)")
+    else:
+        for category in freq.index:
+            print(f"{category}: {freq[category]} ({rel_freq[category]:.2f}%)")
+
 if __name__ == "__main__":
     for col in ratio_cols:
         summarise_ratio(col)
+    for col in nominal_cols:
+        summarise_nominal(col)
+
