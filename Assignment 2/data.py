@@ -6,10 +6,14 @@ import seaborn as sns
 origin_path = "C:\\Dev\\Python\\intro_to_da\\Assignment 2\\25838323.csv"
 df = pd.read_csv(origin_path)
 
+# Convert application_date to datetime, safely handling bad values
+if 'application_date' in df.columns:
+    df['application_date'] = pd.to_datetime(df['application_date'], errors='coerce')
+
 #Grouping each column by attribute type
 nominal_cols = ['gender', 'employment_status', 'loan_purpose', 'region', 'marital_status', 'loan_default']
-ordinal_cols = ['education_level']
-interval_cols = ['credit_score', 'application_year', 'application_date']
+ordinal_cols = ['education_level', 'application_date']
+interval_cols = ['credit_score', 'application_year']  # application_date treated as temporal ordinal, not numeric interval
 ratio_cols = ['age', 'income', 'loan_amount', 'debt_to_income_pct', 'num_dependents', 'years_employed', 'account_balance', 'num_prev_loans', 'monthly_expenses', 'loan_duration_months']
 
 #Missing Columns
