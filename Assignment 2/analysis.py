@@ -72,8 +72,41 @@ def summarise_nominal(col):
             cat_label = "NaN" if pd.isna(category) else str(category)
             print(f"{cat_label}: {freq[category]} ({rel_freq[category]:.2f}%)")
 
+def summarise_ordinal(col):
+    print("-" * 40)
+    print(f"\nSummary for: {col}")
+    print("-" * 40)
+
+    data = df[col]
+    data_clean = data.dropna()
+
+    #Frequency and Relative Frequency
+    freq = data.value_counts(dropna=False)  # Include NaN as a category
+    rel_freq = data.value_counts(normalize=True, dropna=False) * 100
+
+    # Cumulative Frequency
+    freq_no_null = data.value_counts(dropna=True)
+    cum_freq = freq_no_null.cumsum()
+
+    print(f"Mode: {data.mode().iloc[0]}")  # Mode excludes NaN
+    print(f"Missing Values: {data.isnull().sum()}")
+
+    print (f"\nFrequency, Relative & Cumnulative Frequency: ")
+    for category in freq_no_null.index:
+        print(f"  {str(category):<25} count: {freq_no_null[category]:<8} ({rel_freq[category]:.2f}%)   cumulative: {cum_freq[category]}")
+
+    # Impact of missing values
+    if col in missing_cols:
+        print(f"\n   Impact of Missing Values")
+        print(f"{'category':<25} {'Excl. Missing':>15} {'Incl. Missing':>15}")
+        rel_freq_clean = data_clean.value_counts(normalize=True) * 100
+        for category in freq.index:
+            print(f" {str(category):<25} {rel_freq_clean.get(category, 0):>15.2f}% {rel_freq[category]:>15.2f}%")
+
 if __name__ == "__main__":
     for col in ratio_cols:
         summarise_ratio(col)
     for col in nominal_cols:
         summarise_nominal(col)
+    for col in ordinal_cols:
+        summarise_ordinal(col)
