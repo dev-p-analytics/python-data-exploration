@@ -49,7 +49,42 @@ def plot_ratio(col):
     plt.tight_layout()
     plt.show()
 
+def plot_nominal(col):
+    data = df[col]
+    data_clean = data.dropna()
+
+    if col in missing_cols:
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+        fig.suptitle(f'{col} - With vs Without Missing Values', fontsize=14)
+
+        #Include Missing Values
+        freq_with = data.value_counts(dropna=False) 
+        sns.barplot(x=freq_with.index.astype(str), y=freq_with.values, ax=axes[0], color='steelblue')
+        axes[0].set_title('Frequency (Including Missing Values)')
+        axes[0].set_xlabel(col)
+        axes[0].set_ylabel('Count')
+
+        #Exclude Missing Values
+        freq_without = data_clean.value_counts()
+        sns.barplot(x=freq_without.index.astype(str), y=freq_without.values, ax=axes[1], color='salmon')
+        axes[1].set_title('Frequency (Excluding Missing Values)')
+        axes[1].set_xlabel(col)
+        axes[1].set_ylabel('Count')
+
+    else:
+        # Normal Bar Chart
+        fig, axes = plt.subplots(figsize=(10, 5))
+        freq = data.value_counts(dropna=False)
+        sns.barplot(x=freq.index.astype(str), y=freq.values, ax=axes, color='steelblue')
+        axes.set_title('Frequency')
+        axes.set_xlabel(col)
+        axes.set_ylabel('Count')
+
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     for col in ratio_cols:
         plot_ratio(col)
+    for col in nominal_cols:
+        plot_nominal(col)

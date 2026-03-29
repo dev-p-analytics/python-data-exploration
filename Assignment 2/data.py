@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Initiliasing path to the data and loading it into a pandas dataframe
 origin_path = "C:\\Dev\\Python\\intro_to_da\\Assignment 2\\25838323.csv"
