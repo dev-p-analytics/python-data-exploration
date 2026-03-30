@@ -26,7 +26,7 @@ def b1_binning(n_bins=10):
 
 def b2_normalisation():
     # b2 - Min-Max and Z-score Normalization on Loan Amount
-    loan_amount = df[['loan_amount']] # Kept as dataframe through double brackets
+    loan_amount = df[['loan_amount']] # Kept as dataframe through double brackets, since MinMaxScaler and StandardScaler expect 2d input
 
     # Min-max Normalisation scales from 0 to 1
     minmax_scaler = MinMaxScaler()
@@ -52,15 +52,52 @@ def b2_normalisation():
     return result
 
 
+def b3_discretisation():
+    credit_score = df['credit_score'] #Left in [] to keep as Series, since KBinsDiscretizer can handle 1d input
+
+    p25 = credit_score.quantile(0.25)
+    p50 = credit_score.quantile(0.50)
+    p75 = credit_score.quantile(0.75)
+
+    print(f"25th Percentile: {p25}")
+    print(f"50th Percentile: {p50}")
+    print(f"75th Percentile: {p75}")
+
+    # defining bins
+    bins = [credit_score.min(), p25, p50, p75, credit_score.max()] # Custom bins for credit score categories using quantiles, with min and max of credit score range
+    labels = ['Poor', 'Fair', 'Good', 'Very Good'] # Custom labels for the bins
+
+    credit_score_category = pd.cut(
+        credit_score,
+        bins=bins,
+        labels=labels,
+        include_lowest=True  # Include the lowest value in the first bin
+    )
+
+    print("-" * 40)
+    print("B3 - Credit Score Discretisation:")
+    print("-" * 40)
+    freq = credit_score_category.value_counts().sort_index()
+    rel_freq = credit_score_category.value_counts(normalize=True).sort_index() * 100
+    for category in freq.index:
+        print(f"{category}: Count = {freq[category]}, Relative Frequency = {rel_freq[category]:.2f}%")
+
+    result = pd.DataFrame({
+        'credit_score': credit_score.values,
+        'credit_score_category': credit_score_category.values
+    })
+    return result
 
 if __name__ == "__main__":
     b1_result = b1_binning(n_bins=10)
     b2_result = b2_normalisation()
+    b3_result = b3_discretisation()
 
     # saving to excel
     with pd.ExcelWriter('preprocessing_results.xlsx') as writer:
         b1_result.to_excel(writer, sheet_name='B1_Binning', index=False)
         b2_result.to_excel(writer, sheet_name='B2_Normalisation', index=False)
+        b3_result.to_excel(writer, sheet_name='B3_Discretisation', index=False)
 
         print("\nBinning results saved to 'preprocessing_results.xlsx'")
 
