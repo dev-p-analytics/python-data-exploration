@@ -183,6 +183,18 @@ def plot_interval(col):
     plt.tight_layout()
     plt.show()
 
+def plot_correlation_heatmap():
+    # only numeric columns for correlation
+    numeric_df = df.select_dtypes(include=['number'])
+
+    plt.figure(figsize=(14, 10))
+    sns.heatmap(numeric_df.corr(), annot=True, fmt=".2f", cmap='coolwarm', center = 0,linewidths=0.5)
+    plt.title('Correlation Heatmap of Numeric Attributes', fontsize=16)
+    plt.tight_layout()
+    plt.show()
+
+
+
 if __name__ == "__main__":
     for col in ratio_cols:
         plot_ratio(col)
@@ -192,3 +204,4 @@ if __name__ == "__main__":
         plot_ordinal(col)
     for col in interval_cols:
         plot_interval(col)
+    plot_correlation_heatmap()
