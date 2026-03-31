@@ -88,16 +88,49 @@ def b3_discretisation():
     })
     return result
 
+def b4_binarisation():
+    # getting unique values of region column/attribute
+    region_values = df['region'].dropna().unique()
+    region_series = pd.Series(region_values)        #converting to series for get_dummies, since it expects 1d input
+
+    # one-hot encoding using pandas get_dummies
+    binarised_values = pd.get_dummies(region_series, prefix='region').astype(int) # Convert to int for binary representation (0s and 1s)
+
+    print("-" * 40)
+    print("B4 - Region Binarisation:")
+    print("-" * 40)
+    print(region_series)
+    print("\nBinarised Region Values:")
+    print(binarised_values)
+
+    binarised_full = pd.get_dummies(df['region'], prefix='region').astype(int)
+    
+    result = pd.DataFrame({
+        'region':          df['region'].values,
+        'region_Central':  binarised_full['region_Central'].values,
+        'region_East':     binarised_full['region_East'].values,
+        'region_North':    binarised_full['region_North'].values,
+        'region_South':    binarised_full['region_South'].values,
+        'region_West':     binarised_full['region_West'].values,
+    })
+
+    return result
+
+
+
 if __name__ == "__main__":
     b1_result = b1_binning(n_bins=10)
     b2_result = b2_normalisation()
     b3_result = b3_discretisation()
+    b4_result = b4_binarisation()
 
     # saving to excel
     with pd.ExcelWriter('preprocessing_results.xlsx') as writer:
         b1_result.to_excel(writer, sheet_name='B1_Binning', index=False)
         b2_result.to_excel(writer, sheet_name='B2_Normalisation', index=False)
         b3_result.to_excel(writer, sheet_name='B3_Discretisation', index=False)
+        b4_result.to_excel(writer, sheet_name='B4_Binarisation', index=False)
 
         print("\nBinning results saved to 'preprocessing_results.xlsx'")
+
 
