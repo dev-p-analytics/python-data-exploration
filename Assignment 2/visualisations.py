@@ -193,15 +193,135 @@ def plot_correlation_heatmap():
     plt.tight_layout()
     plt.show()
 
+def plot_clustering():
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    fig.suptitle('Clustering Analysis', fontsize=14)
 
+    #cluster 1 - income vs monthly expenses
+    sns.scatterplot(
+        data = df,
+        x='income',
+        y='monthly_expenses',
+        ax=axes[0],
+        alpha = 0.5,
+        color = 'steelblue'
+    )
+
+    axes[0].set_title('Income vs Monthly Expenses')
+    axes[0].set_xlabel('Income')
+    axes[0].set_ylabel('Monthly Expenses')
+
+    #cluster 2 - credit score vs debt to income coloured by loan default
+    sns.scatterplot(
+        data = df,
+        x='credit_score',
+        y='debt_to_income_pct',
+        hue='loan_default',
+        ax=axes[1],
+        alpha = 0.5,
+        palette = {0: 'steelblue', 1: 'salmon'}
+    )
+    axes[1].set_title('Credit Score vs Debt to Income (by Loan Default)')
+    axes[1].set_xlabel('Credit Score')
+    axes[1].set_ylabel('Debt to Income')
+    axes[1].legend(title = 'Loan Default', labels=['No Default', 'Default'])
+
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_outliers():
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    fig.suptitle('Outlier Detection - Income', fontsize=14)
+
+    #boxplot
+    sns.boxplot(x=df['income'], ax=axes[0], color='steelblue')
+    axes[0].set_title('Boxplot of Income')
+    axes[0].set_xlabel('Income')
+
+    #IQR outlier detection
+    Q1 = df['income'].quantile(0.25)
+    Q3 = df['income'].quantile(0.75)
+    IQR = Q3 - Q1
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
+    outliers = df[(df['income'] < lower) | (df['income'] > upper)]['income']
+
+    print(f"IQR: {IQR:.2f}")
+    print(f"Lower Bound: {lower:.2f}")
+    print(f"Upper Bound: {upper:.2f}")
+    print(f"Number of Outliers: {len(outliers)}")
+    print(f"Outlier min: {outliers.min():.2f}")
+    print(f"Outlier max: {outliers.max():.2f}")
+
+    #Historgram that displays outliers
+    sns.histplot(df['income'], bins=30, kde=True, ax=axes[1], color='salmon')
+    axes[1].set_title('Income Distribution with Outliers')
+    axes[1].axvline(lower, color='red', linestyle='--', label=f'Lower Bound: {lower:.2f}')
+    axes[1].axvline(upper, color='red', linestyle='--', label=f'Upper Bound: {upper:.2f}')
+    axes[1].set_xlabel('Income')
+    axes[1].set_ylabel('Frequency')
+    axes[1].legend()
+
+    plt.tight_layout()
+    plt.show()
+
+def plot_patterns():
+    fig, axes = plt.subplots(1, 3, figsize=(14, 5))
+    fig.suptitle('Pattern Analysis', fontsize=14)
+
+    #pattern 1 - credit score vs loan default
+    sns.boxplot(
+        data = df,
+        x='loan_default',
+        y='credit_score',
+        ax=axes[0],
+        color = 'steelblue'
+    )
+
+    axes[0].set_title('Credit Score by Loan Default')
+    axes[0].set_xlabel('Loan Default (0 = No Default, 1 = Default)')
+    axes[0].set_ylabel('Credit Score')
+
+    #pattern 2 - debt to income vs loan default
+    sns.boxplot(
+        data = df,
+        x='loan_default',
+        y='debt_to_income_pct',
+        ax=axes[1],
+        color='salmon'
+    )
+
+    axes[1].set_title('Debt to Income % by Loan Default')
+    axes[1].set_xlabel('Loan Default (0 = No Default, 1 = Default)')
+    axes[1].set_ylabel('Debt to Income')
+
+    #pattern 3 - loan amount vs loan default
+    sns.boxplot(
+        data = df,
+        x='loan_default',
+        y='loan_amount',
+        ax=axes[2],
+        color='steelblue'
+    )
+
+    axes[2].set_title('Loan Amount by Loan Default')
+    axes[2].set_xlabel('Loan Default (0 = No Default, 1 = Default)')
+    axes[2].set_ylabel('Loan Amount')
+
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
-    for col in ratio_cols:
+    '''for col in ratio_cols:
         plot_ratio(col)
     for col in nominal_cols:
         plot_nominal(col)
     for col in ordinal_cols:
         plot_ordinal(col)
     for col in interval_cols:
-        plot_interval(col)
+        plot_interval(col)'''
     plot_correlation_heatmap()
+    plot_clustering()
+    plot_outliers()
+    plot_patterns()
