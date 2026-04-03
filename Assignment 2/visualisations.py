@@ -313,14 +313,14 @@ def plot_patterns():
     plt.show()
 
 if __name__ == "__main__":
-    '''for col in ratio_cols:
+    for col in ratio_cols:
         plot_ratio(col)
     for col in nominal_cols:
         plot_nominal(col)
     for col in ordinal_cols:
         plot_ordinal(col)
     for col in interval_cols:
-        plot_interval(col)'''
+        plot_interval(col)
     plot_correlation_heatmap()
     plot_clustering()
     plot_outliers()
